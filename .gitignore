@@ -1,0 +1,6 @@
+SOURCES/*.tar.gz
+BUILD
+BUILDROOT
+RPMS
+SRPMS
+.vagrant/

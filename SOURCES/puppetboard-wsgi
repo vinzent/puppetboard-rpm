@@ -1,0 +1,8 @@
+#!/usr/bin/env PYTHON_HOME=/opt/voxpupuli/puppetboard python
+
+from __future__ import absolute_import
+import os
+
+# Needed if a settings.py file exists
+os.environ['PUPPETBOARD_SETTINGS'] = '/etc/opt/voxpupuli/puppetboard/settings.conf'
+from puppetboard.app import app as application
