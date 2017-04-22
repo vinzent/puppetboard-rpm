@@ -8,9 +8,12 @@ in a virtualenv.
 
 Only used on EL7 so far.
 
-Puppetboard settings are to be found in `/etc/opt/voxpupuli/puppetboard/settings.conf`
+Nice to know:
 
-Apache config is placed here: `/etc/httpd/conf.d/puppetboard.conf`
+* The WSGI process runs as user `puppetboard`
+* Puppetboard settings are to be found in `/etc/opt/voxpupuli/puppetboard/settings.conf`
+* Apache config is placed here: `/etc/httpd/conf.d/puppetboard.conf`
+* Binaries and python blobs in `/opt/voxpupuli/puppetboard`
 
 
 Howto build
