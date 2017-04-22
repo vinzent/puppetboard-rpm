@@ -1,10 +1,16 @@
 puppetboard-rpm
 ===============
 
+WARNING: this is a pre-release ! alpha quality ! 
+
 Builds a rpm for puppetboard with all dependencies included 
 in a virtualenv.
 
 Only used on EL7 so far.
+
+Puppetboard settings are to be found in `/etc/opt/voxpupuli/puppetboard/settings.conf`
+
+Apache config is placed here: `/etc/httpd/conf.d/puppetboard.conf`
 
 
 Howto build
