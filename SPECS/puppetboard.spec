@@ -72,7 +72,7 @@ fi
 %config(noreplace) /etc/httpd/conf.d/puppetboard.conf
 %doc README.rst
 %doc CHANGELOG.rst
-%doc LICENSE
+%license LICENSE
 
 
 %changelog
