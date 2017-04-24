@@ -3,7 +3,7 @@
 
 Name:           puppetboard        
 Version:        0.2.2
-Release:        0.0.1%{?dist}
+Release:        0.0.2%{?dist}
 Summary:        PuppetDB frontend
 
 License:        Apache 2.0
@@ -59,6 +59,12 @@ getent group puppetboard >/dev/null || groupadd -r puppetboard
 getent passwd puppetboard >/dev/null || \
     useradd -r -g puppetboard -d /opt/voxpupuli/puppetboard -s /sbin/nologin \
       -c "Daemon user for Puppetboard" puppetboard
+
+%post
+CFG=/etc/opt/voxpupuli/puppetboard/settings.conf
+if [ -f $CFG ] && !grep '^SECRET_KEY' $CFG >/dev/null
+  echo "SECRET_KEY = '$(dd if=/dev/urandom bs=128 count=1 2>/dev/null |  base64 | grep -E -o '[a-zA-Z0-9]' | head -30 | tr -d '\n')'" >>$CFG
+fi
 
 %files
 /opt/voxpupuli/puppetboard
