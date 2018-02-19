@@ -35,6 +35,7 @@ curl -o requirements.txt --silent "https://raw.githubusercontent.com/voxpupuli/p
 echo "# Added by puppetboard-rpm" >>requirements.txt
 echo gunicorn >>requirements.txt
 echo setuptools >>requirements.txt
+echo "pip>=9.0.1" >>requirements.txt
 
 pip download --quiet -r requirements.txt
 

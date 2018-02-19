@@ -5,7 +5,7 @@
 
 Name:           puppetboard        
 Version:        0.3.0
-Release:        0.3.0%{?dist}
+Release:        0.4.0%{?dist}
 Summary:        PuppetDB frontend
 
 License:        Apache 2.0
@@ -33,10 +33,18 @@ echo "BUILD $(pwd)"
 
 virtualenv venv
 . venv/bin/activate
+
+# EL7 pip (1.4.1) won't add links to bin/
+pip_mod=$(find ./puppetboard-pymods-%{version} -type f -name "pip-*")
+python -m pip install $pip_mod
+rm -f $pip_mod
+
 for mod in $(find ./puppetboard-pymods-%{version} -type f ! -name "*.txt"); do
-  pip install --no-index --no-deps $mod
+  python -m pip install --no-index --no-deps $mod
 done
-pip install ./ --no-index
+
+python -m pip install ./ --no-index
+
 virtualenv --relocatable venv/
 
 # only supported by Python 3.6 - brp-python-bytecompile fails on this file
