@@ -1,0 +1,21 @@
+[Unit]
+Description=puppetboard daemon
+After=network.target
+
+[Service]
+PIDFile=/run/puppetboard/pid
+User=puppetboard
+Group=puppetboard
+RuntimeDirectory=puppetboard
+WorkingDirectory=/opt/voxpupuli/puppetboard
+ExecStart=/opt/voxpupuli/puppetboard/bin/gunicorn --pid /run/puppetboard/pid   \
+          --bind 127.0.0.1:9090 \
+          --log-file /var/log/puppetboard/puppetboard.log \
+          puppetboard.app:app
+ExecReload=/bin/kill -s HUP $MAINPID
+ExecStop=/bin/kill -s TERM $MAINPID
+PrivateTmp=true
+UMask=027
+
+[Install]
+WantedBy=multi-user.target

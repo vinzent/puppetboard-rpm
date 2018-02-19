@@ -1,0 +1,43 @@
+#!/bin/bash
+
+
+set -e
+set -u
+set -o pipefail
+
+trap cleanup EXIT
+
+cleanup() {
+  exitcode=$?
+  if [ "$exitcode" != "0" ]; then
+    rm -rf "$TEMPDIR"
+  fi
+  exit $exitcode
+}
+
+
+TEMPDIR=$(mktemp -d -t -- build-python-module-tar-gz.XXXXXXX)
+
+VERSION=${1:-}
+PREFIX="puppetboard-pymods-${VERSION}"
+
+if [ -z "$VERSION" ]; then
+  echo "Usage: $0 <version> >/path/to/file.tar.gz" >&2
+  exit -1
+fi
+
+cd $TEMPDIR
+mkdir $PREFIX
+cd $PREFIX
+
+curl -o requirements.txt --silent "https://raw.githubusercontent.com/voxpupuli/puppetboard/v${VERSION}/requirements.txt"
+
+echo "# Added by puppetboard-rpm" >>requirements.txt
+echo gunicorn >>requirements.txt
+echo setuptools >>requirements.txt
+
+pip download --quiet -r requirements.txt
+
+cd $TEMPDIR
+
+tar -cz $PREFIX/
