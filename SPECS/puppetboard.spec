@@ -5,14 +5,14 @@
 
 Name:           puppetboard        
 Version:        0.3.0
-Release:        0.4.0%{?dist}
+Release:        0.5.0%{?dist}
 Summary:        PuppetDB frontend
 
 License:        Apache 2.0
 URL:            https://github.com/voxpupuli/puppetboard
 Source0:        https://github.com/voxpupuli/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        puppetboard-pymods-%{version}.tar.gz
-Source2:        puppetboard-settings.conf
+Source2:        puppetboard.sysconfig
 Source3:        puppetboard.service
 Source4:        puppetboard.tmpfiles
 
@@ -29,8 +29,6 @@ PuppetDB frontend
 tar xzf %{SOURCE1}
 
 %build
-echo "BUILD $(pwd)"
-
 virtualenv venv
 . venv/bin/activate
 
@@ -57,20 +55,16 @@ rm -f venv/bin/activate.fish
 sed -i "s|$(pwd)/venv|/opt/voxpupuli/puppetboard|g" venv/bin/activate 
 
 %install
-mkdir -p $RPM_BUILD_ROOT/etc/opt/voxpupuli/puppetboard
-mkdir -p $RPM_BUILD_ROOT/var/log/puppetboard
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/puppetboard
 
 mkdir -p $RPM_BUILD_ROOT/opt/voxpupuli
 mv venv/ $RPM_BUILD_ROOT/opt/voxpupuli/puppetboard
 
+install -D -m 0640 %{SOURCE2} $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/puppetboard
 install -D -m 0644 %{SOURCE3} $RPM_BUILD_ROOT%{_unitdir}/puppetboard.service
 install -D -m 0644 %{SOURCE4} $RPM_BUILD_ROOT%{_tmpfilesdir}/puppetboard.conf
 
-mkdir -p $RPM_BUILD_ROOT/run/puppetboard
-
-# Named .conf because rpmbuild process will create .pyc/.pyo files in post-scripts
-cp %{SOURCE2} $RPM_BUILD_ROOT/etc/opt/voxpupuli/puppetboard/settings.conf
-
+mkdir -p $RPM_BUILD_ROOT%{_rundir}/puppetboard
 
 %pre
 getent group puppetboard >/dev/null || groupadd -r puppetboard
@@ -79,10 +73,10 @@ getent passwd puppetboard >/dev/null || \
       -c "Daemon user for Puppetboard" puppetboard
 
 %post
-CFG=/etc/opt/voxpupuli/puppetboard/settings.conf
+CFG=%{_sysconfdir}/sysconfig/puppetboard
 if [ -f $CFG ] && ! grep -q '^SECRET_KEY' $CFG; then
   secret_key_generated=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null |  base64 | grep -E -o '[a-zA-Z0-9]' | head -30 | tr -d '\n')
-  echo "SECRET_KEY = '$secret_key_generated'" >>$CFG
+  echo "SECRET_KEY=$secret_key_generated" >>$CFG
 fi
 
 %systemd_post puppetboard.service
@@ -96,11 +90,11 @@ fi
 
 %files
 /opt/voxpupuli/puppetboard
-%dir %attr(750, puppetboard, puppetboard) /run/puppetboard
+%dir %attr(750, puppetboard, puppetboard) %{_rundir}/puppetboard
+%config(noreplace) %attr(640, root, root) %{_sysconfdir}/sysconfig/puppetboard
 %{_unitdir}/puppetboard.service
 %{_tmpfilesdir}/puppetboard.conf
-%attr(640, root, puppetboard) %config(noreplace) /etc/opt/voxpupuli/puppetboard/settings.conf
-%attr(750, puppetboard, adm) /var/log/puppetboard
+%attr(750, puppetboard, adm) %{_localstatedir}/log/puppetboard
 %doc README.rst
 %doc CHANGELOG.rst
 %license LICENSE
@@ -111,5 +105,3 @@ fi
 - Upgrade to puppetboard 0.3.0
 - Remove mod_wsgi, use gunicorn instead
 - Add puppetboard.service systemd file (listen: 127.0.0.1:9090)
-
-
