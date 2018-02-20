@@ -73,12 +73,6 @@ getent passwd puppetboard >/dev/null || \
       -c "Daemon user for Puppetboard" puppetboard
 
 %post
-CFG=%{_sysconfdir}/sysconfig/puppetboard
-if [ -f $CFG ] && ! grep -q '^SECRET_KEY' $CFG; then
-  secret_key_generated=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null |  base64 | grep -E -o '[a-zA-Z0-9]' | head -30 | tr -d '\n')
-  echo "SECRET_KEY=$secret_key_generated" >>$CFG
-fi
-
 %systemd_post puppetboard.service
 
 %preun
