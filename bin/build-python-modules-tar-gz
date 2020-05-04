@@ -37,7 +37,7 @@ echo gunicorn >>requirements.txt
 echo setuptools >>requirements.txt
 echo "pip>=9.0.1" >>requirements.txt
 
-pip download --quiet -r requirements.txt
+pip3 download --quiet -r requirements.txt
 
 cd $TEMPDIR
 
