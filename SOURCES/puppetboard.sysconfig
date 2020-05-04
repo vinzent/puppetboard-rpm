@@ -4,6 +4,6 @@
 GUNICORN_CMD_ARGS="--bind 127.0.0.1:9090 --workers=2 --access-logfile=- --log-file=- --log-level=info"
 
 # read env for settings (essentially this file here)
-PUPPETBOARD_SETTING=/opt/voxpupuli/puppetboard/lib/python2.7/site-packages/puppetboard/docker_settings.py
+PUPPETBOARD_SETTING=/opt/voxpupuli/puppetboard/lib/python3.6/site-packages/puppetboard/docker_settings.py
 
 OFFLINE_MODE=true

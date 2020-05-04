@@ -22,7 +22,7 @@ Howto build
 Prerequisites: 
 
 ```
-yum install python-virtualenv rpm-build gcc rpmdevtools
+yum install rh-python36-python-virtualenv rpm-build gcc rpmdevtools
 ```
 
 Download sources:

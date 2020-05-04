@@ -2,10 +2,11 @@
 %global __provides_exclude ^python.*$
 
 %define debug_package %{nil}
+%define __python /opt/rh/rh-python36/root/usr/bin/python3
 
 Name:           puppetboard        
-Version:        0.3.0
-Release:        0.5.0%{?dist}
+Version:        2.1.2
+Release:        1%{?dist}
 Summary:        PuppetDB frontend
 
 License:        Apache 2.0
@@ -17,8 +18,7 @@ Source3:        puppetboard.service
 Source4:        puppetboard.tmpfiles
 
 BuildRequires: systemd
-BuildRequires:  python-virtualenv
-Requires:       python-virtualenv
+BuildRequires: rh-python36-python-virtualenv
 %{?systemd_requires}
 
 %description
@@ -34,20 +34,16 @@ virtualenv venv
 
 # EL7 pip (1.4.1) won't add links to bin/
 pip_mod=$(find ./puppetboard-pymods-%{version} -type f -name "pip-*")
-python -m pip install $pip_mod
+python3 -m pip install $pip_mod
 rm -f $pip_mod
 
 for mod in $(find ./puppetboard-pymods-%{version} -type f ! -name "*.txt"); do
-  python -m pip install --no-index --no-deps $mod
+  python3 -m pip install --no-index --no-deps $mod
 done
 
-python -m pip install ./ --no-index
+python3 -m pip install ./ --no-index
 
 virtualenv --relocatable venv/
-
-# only supported by Python 3.6 - brp-python-bytecompile fails on this file
-rm -f venv/lib/python2.7/site-packages/jinja2/{asyncfilters,asyncsupport}.py
-rm -f venv/lib/python2.7/site-packages/gunicorn/workers/_gaiohttp.py
 
 rm -f venv/bin/activate.csh
 rm -f venv/bin/activate.fish
@@ -89,12 +85,15 @@ getent passwd puppetboard >/dev/null || \
 %{_unitdir}/puppetboard.service
 %{_tmpfilesdir}/puppetboard.conf
 %attr(750, puppetboard, adm) %{_localstatedir}/log/puppetboard
-%doc README.rst
-%doc CHANGELOG.rst
+%doc README.md
+%doc CHANGELOG.md
 %license LICENSE
 
 
 %changelog
+* Mon May 04 2020 Beat Gaetzi <beat@chruetertee.ch> - 2.1.2-1
+- Upgrade to puppetboard 2.1.2
+
 * Fri Feb 16 2018 Thomas Mueller <thomas@chaschperli.ch> - 0.3.0-0.2.0
 - Upgrade to puppetboard 0.3.0
 - Remove mod_wsgi, use gunicorn instead
